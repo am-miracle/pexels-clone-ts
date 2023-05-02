@@ -1,8 +1,34 @@
 {
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
-    "@types/node": "^18.16.3"
-  }
+    "@types/node": "^18.16.3",
+    "dotenv": "^16.0.3",
+    "dotenv-webpack": "^8.0.1",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.0.2"
+  },
+  "name": "pexels-clone-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/am-miracle/pexels-clone-ts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/am-miracle/pexels-clone-ts/issues"
+  },
+  "homepage": "https://github.com/am-miracle/pexels-clone-ts#readme",
+  "description": ""
 }

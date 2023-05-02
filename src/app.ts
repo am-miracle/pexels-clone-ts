@@ -1,13 +1,9 @@
-import dotenv from "dotenv"
 const imagesWrapper: HTMLElement = document.querySelector(".images")!;
 const loadMoreBtn: HTMLElement = document.querySelector(".load-more")!;
 const searchInput: HTMLElement = document.querySelector(".search-box input")!;
 const lightBox: HTMLElement = document.querySelector(".lightbox")!;
 const closeBtn: HTMLElement = document.querySelector(".uis-times")!;
 const downloadImgBtn: HTMLElement = document.querySelector(".uis-import")!;
-// const showLightboxBtn: HTMLElement = document.querySelector(".card img")!;
-
-dotenv.config()
 
 const apiKey: string | undefined = process.env.PEXEL_API_KEY;
 
@@ -58,23 +54,52 @@ const hideLightbox = () => {
 const generateHTML = (images: Image[]): void => {
     // Making li of all fetched images and adding them to the existing image wrapper
     imagesWrapper.innerHTML += images
-    .map(
-    (img: Image) => `
-        <li class="card">
-            <img src="${img.src.large2x}" alt="${img.alt}" onclick="showLightbox('${img.photographer}', '${img.src.large2x}')">
-            <div class="details">
-                <div class="photographer">
-                    <i class="uis uis-camera"></i>
-                    <span>${img.photographer}</span>
-                </div>
-                <button onClick="downloadImg('${img.src.large2x}')">
-                    <i class="uis uis-import"></i>
-                </button>
-            </div>
-        </li>
-    `
-    )
-    .join("");
+        .map((img: Image) => {
+            const li = document.createElement('li');
+            li.className = 'card';
+
+            const imgElement = document.createElement('img');
+            imgElement.src = img.src.large2x;
+            imgElement.alt = img.alt;
+
+            imgElement.addEventListener('click', () => {
+                showLightbox(img.photographer, img.src.large2x);
+            });
+
+            const detailsDiv = document.createElement('div');
+            detailsDiv.className = 'details';
+
+            const photographerDiv = document.createElement('div');
+            photographerDiv.className = 'photographer';
+
+            const cameraIcon = document.createElement('i');
+            cameraIcon.className = 'uis uis-camera';
+
+            const photographerName = document.createElement('span');
+            photographerName.textContent = img.photographer;
+
+            photographerDiv.appendChild(cameraIcon);
+            photographerDiv.appendChild(photographerName);
+
+            const downloadButton = document.createElement('button');
+            downloadButton.addEventListener('click', () => {
+                downloadImg(img.src.large2x);
+            });
+
+            const importIcon = document.createElement('i');
+            importIcon.className = 'uis uis-import';
+
+            downloadButton.appendChild(importIcon);
+
+            detailsDiv.appendChild(photographerDiv);
+            detailsDiv.appendChild(downloadButton);
+
+            li.appendChild(imgElement);
+            li.appendChild(detailsDiv);
+
+            return li.outerHTML;
+        })
+        .join('');
 };
 
 const getImages = (apiURL: string): void => {

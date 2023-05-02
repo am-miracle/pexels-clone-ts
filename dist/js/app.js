@@ -1,13 +1,14 @@
-import dotenv from "dotenv";
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+var __webpack_exports__ = {};
+
 const imagesWrapper = document.querySelector(".images");
 const loadMoreBtn = document.querySelector(".load-more");
 const searchInput = document.querySelector(".search-box input");
 const lightBox = document.querySelector(".lightbox");
 const closeBtn = document.querySelector(".uis-times");
 const downloadImgBtn = document.querySelector(".uis-import");
-// const showLightboxBtn: HTMLElement = document.querySelector(".card img")!;
-dotenv.config();
-const apiKey = process.env.PEXEL_API_KEY;
+const apiKey = "AbWb1cZeTGI4crzYj59wKuNVgDoF7u7XEhkLGBCgHLFC0fkW7M1JxUjb";
 const perPage = 15;
 let currentPage = 1;
 let apiURL = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
@@ -43,21 +44,39 @@ const hideLightbox = () => {
 const generateHTML = (images) => {
     // Making li of all fetched images and adding them to the existing image wrapper
     imagesWrapper.innerHTML += images
-        .map((img) => `
-        <li class="card">
-            <img src="${img.src.large2x}" alt="${img.alt}" onclick="showLightbox('${img.photographer}', '${img.src.large2x}')">
-            <div class="details">
-                <div class="photographer">
-                    <i class="uis uis-camera"></i>
-                    <span>${img.photographer}</span>
-                </div>
-                <button onClick="downloadImg('${img.src.large2x}')">
-                    <i class="uis uis-import"></i>
-                </button>
-            </div>
-        </li>
-    `)
-        .join("");
+        .map((img) => {
+        const li = document.createElement('li');
+        li.className = 'card';
+        const imgElement = document.createElement('img');
+        imgElement.src = img.src.large2x;
+        imgElement.alt = img.alt;
+        imgElement.addEventListener('click', () => {
+            showLightbox(img.photographer, img.src.large2x);
+        });
+        const detailsDiv = document.createElement('div');
+        detailsDiv.className = 'details';
+        const photographerDiv = document.createElement('div');
+        photographerDiv.className = 'photographer';
+        const cameraIcon = document.createElement('i');
+        cameraIcon.className = 'uis uis-camera';
+        const photographerName = document.createElement('span');
+        photographerName.textContent = img.photographer;
+        photographerDiv.appendChild(cameraIcon);
+        photographerDiv.appendChild(photographerName);
+        const downloadButton = document.createElement('button');
+        downloadButton.addEventListener('click', () => {
+            downloadImg(img.src.large2x);
+        });
+        const importIcon = document.createElement('i');
+        importIcon.className = 'uis uis-import';
+        downloadButton.appendChild(importIcon);
+        detailsDiv.appendChild(photographerDiv);
+        detailsDiv.appendChild(downloadButton);
+        li.appendChild(imgElement);
+        li.appendChild(detailsDiv);
+        return li.outerHTML;
+    })
+        .join('');
 };
 const getImages = (apiURL) => {
     loadMoreBtn.innerHTML = "Loading...";
@@ -122,3 +141,6 @@ function changeColor() {
     currentIndex = (currentIndex + 1) % colors.length;
 }
 setInterval(changeColor, 5000);
+
+/******/ })()
+;

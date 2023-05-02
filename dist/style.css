@@ -12,9 +12,6 @@
   position: relative;
   align-items: center;
   justify-content: center;
-  background-color: #3c1053;
-  transition: background-color 1s ease-in-out;
-  width: 100%;
 }
 .search::before, .search img, .lightbox {
   left: 0;
@@ -186,22 +183,22 @@ button, i {
   pointer-events: auto;
   transform: translate(-50%, -50%) scale(1);
 }
-.wrapper .header {
+.wrapper header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.header .photographer {
+header .photographer {
   color: #333;
 }
-.header .photographer i {
+header .photographer i {
   font-size: 1.7rem;
   cursor: auto;
 }
-.header .photographer span {
+header .photographer span {
   font-size: 1.2rem;
 }
-.header .buttons i {
+header .buttons i {
   height: 40px;
   width: 40px;
   display: inline-block;
@@ -213,15 +210,15 @@ button, i {
   border-radius: 4px;
   transition: 0.2s ease;
 }
-.header .buttons i:first-child:hover {
+header .buttons i:first-child:hover {
   background: #704dff;
 }
-.header .buttons i:last-child {
+header .buttons i:last-child {
   margin-left: 10px;
   font-size: 1.25rem;
   background: #6C757D;
 }
-.header .buttons i:last-child:hover {
+header .buttons i:last-child:hover {
   background: #5f666d;
 }
 .wrapper .preview-img {
@@ -246,10 +243,10 @@ button, i {
   .wrapper .preview-img {
     margin-top: 15px;
   }
-  .header .buttons i:last-child {
+  header .buttons i:last-child {
     margin-left: 7px;
   }
-  .header .photographer span, .search p {
+  header .photographer span, .search p {
     font-size: 1.1rem;
   }
   .search h1 {
