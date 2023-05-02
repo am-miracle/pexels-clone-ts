@@ -1,13 +1,15 @@
+import dotenv from "dotenv"
 const imagesWrapper: HTMLElement = document.querySelector(".images")!;
 const loadMoreBtn: HTMLElement = document.querySelector(".load-more")!;
 const searchInput: HTMLElement = document.querySelector(".search-box input")!;
 const lightBox: HTMLElement = document.querySelector(".lightbox")!;
 const closeBtn: HTMLElement = document.querySelector(".uis-times")!;
 const downloadImgBtn: HTMLElement = document.querySelector(".uis-import")!;
+// const showLightboxBtn: HTMLElement = document.querySelector(".card img")!;
 
+dotenv.config()
 
-// const apiKey: string | undefined = process.env.PEXEL_API_KEY;
-const apiKey: string | undefined = "AbWb1cZeTGI4crzYj59wKuNVgDoF7u7XEhkLGBCgHLFC0fkW7M1JxUjb";
+const apiKey: string | undefined = process.env.PEXEL_API_KEY;
 
 
 const perPage: number = 15;
@@ -54,8 +56,8 @@ const hideLightbox = () => {
 }
 
 const generateHTML = (images: Image[]): void => {
-// Making li of all fetched images and adding them to the existing image wrapper
-imagesWrapper.innerHTML += images
+    // Making li of all fetched images and adding them to the existing image wrapper
+    imagesWrapper.innerHTML += images
     .map(
     (img: Image) => `
         <li class="card">

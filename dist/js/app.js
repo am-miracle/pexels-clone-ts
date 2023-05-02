@@ -1,12 +1,13 @@
-"use strict";
+import dotenv from "dotenv";
 const imagesWrapper = document.querySelector(".images");
 const loadMoreBtn = document.querySelector(".load-more");
 const searchInput = document.querySelector(".search-box input");
 const lightBox = document.querySelector(".lightbox");
 const closeBtn = document.querySelector(".uis-times");
 const downloadImgBtn = document.querySelector(".uis-import");
-// const apiKey: string | undefined = process.env.PEXEL_API_KEY;
-const apiKey = "AbWb1cZeTGI4crzYj59wKuNVgDoF7u7XEhkLGBCgHLFC0fkW7M1JxUjb";
+// const showLightboxBtn: HTMLElement = document.querySelector(".card img")!;
+dotenv.config();
+const apiKey = process.env.PEXEL_API_KEY;
 const perPage = 15;
 let currentPage = 1;
 let apiURL = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
