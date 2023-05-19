@@ -1,155 +1,121 @@
-const imagesWrapper: HTMLElement = document.querySelector(".images")!;
-const loadMoreBtn: HTMLElement = document.querySelector(".load-more")!;
-const searchInput: HTMLElement = document.querySelector(".search-box input")!;
-const lightBox: HTMLElement = document.querySelector(".lightbox")!;
-const closeBtn: HTMLElement = document.querySelector(".uis-times")!;
-const downloadImgBtn: HTMLElement = document.querySelector(".uis-import")!;
+const imageWrapper = document.querySelector(".images") as HTMLElement;
+const searchInput = document.querySelector(".search input") as HTMLInputElement;
+const loadMoreBtn = document.querySelector(".gallery .load-more") as HTMLElement;
+const lightbox = document.querySelector(".lightbox") as HTMLElement;
+const downloadImgBtn = lightbox.querySelector(".uis-import") as HTMLElement;
+const closeImgBtn = lightbox.querySelector(".uis-times") as HTMLElement;
 
-const apiKey: string | undefined = process.env.PEXEL_API_KEY;
-
-
+const apiKey: string | null = "AbWb1cZeTGI4crzYj59wKuNVgDoF7u7XEhkLGBCgHLFC0fkW7M1JxUjb";
 const perPage: number = 15;
 let currentPage: number = 1;
-let apiURL: string = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
-let searchTerm: string | null;
+let searchTerm: string | null = null;
 
-interface Image {
-    src: {
-      large2x: string;
-    };
-    alt: string;
-    photographer: string;
-}
-
-const downloadImg = (imgURL: string): void => {
+const downloadImg = (imgUrl: string) => {
     // Converting received img to blob, creating its download link, & downloading it
-    fetch(imgURL)
-        .then((res: Response) => res.blob())
-        .then((file: Blob) => {
-            const a: HTMLAnchorElement = document.createElement("a");
-            a.href = URL.createObjectURL(file);
-            a.download = new Date().getTime().toString();
-            a.click();
-        })
-        .catch(() => alert("Failed to download image!"));
-};
-
-const showLightbox = (name: string, img: string): void => {
-    // Showing lightbox and setting img source, name and button attributes
-    lightBox.querySelector("img")?.setAttribute("src", img);
-    const photographerSpan = lightBox.querySelector(".photographer span");
-    if (photographerSpan !== null) {
-        photographerSpan.innerHTML = name ?? '';
-    }
-    downloadImgBtn.setAttribute("data-img", img);
-    lightBox.classList.add("show");
-    document.body.style.overflow = "hidden";
-};
-
-const hideLightbox = () => {
-    lightBox.classList.add("show");
-    document.body.style.overflow = "auto";
-}
-
-const generateHTML = (images: Image[]): void => {
-    // Making li of all fetched images and adding them to the existing image wrapper
-    imagesWrapper.innerHTML += images
-        .map((img: Image) => {
-            const li = document.createElement('li');
-            li.className = 'card';
-
-            const imgElement = document.createElement('img');
-            imgElement.src = img.src.large2x;
-            imgElement.alt = img.alt;
-
-            imgElement.addEventListener('click', () => {
-                showLightbox(img.photographer, img.src.large2x);
-            });
-
-            const detailsDiv = document.createElement('div');
-            detailsDiv.className = 'details';
-
-            const photographerDiv = document.createElement('div');
-            photographerDiv.className = 'photographer';
-
-            const cameraIcon = document.createElement('i');
-            cameraIcon.className = 'uis uis-camera';
-
-            const photographerName = document.createElement('span');
-            photographerName.textContent = img.photographer;
-
-            photographerDiv.appendChild(cameraIcon);
-            photographerDiv.appendChild(photographerName);
-
-            const downloadButton = document.createElement('button');
-            downloadButton.addEventListener('click', () => {
-                downloadImg(img.src.large2x);
-            });
-
-            const importIcon = document.createElement('i');
-            importIcon.className = 'uis uis-import';
-
-            downloadButton.appendChild(importIcon);
-
-            detailsDiv.appendChild(photographerDiv);
-            detailsDiv.appendChild(downloadButton);
-
-            li.appendChild(imgElement);
-            li.appendChild(detailsDiv);
-
-            return li.outerHTML;
-        })
-        .join('');
-};
-
-const getImages = (apiURL: string): void => {
-    loadMoreBtn.innerHTML = "Loading...";
-    loadMoreBtn.classList.add("disabled");
-    // Fetching images by API call with authorization header
-    const headers: HeadersInit = {
-        Authorization: apiKey ?? "",
-    };
-    fetch(apiURL, {
-      headers
-    })
-      .then((res: Response) => res.json())
-      .then((data: { photos: Image[] }) => {
-        generateHTML(data.photos);
-        loadMoreBtn.innerHTML = "Load More";
-        loadMoreBtn.classList.remove("disabled");
-      }).catch(() => alert("Failed to load images"));
+    fetch(imgUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = new Date().getTime().toString();
+        a.click();
+      })
+      .catch(() => alert("Failed to download image!"));
   };
 
-const loadMoreImages = (): void => {
-    currentPage++; // Increment currentPage by 1
-    // if searchTerm has some value then call API with search term else call default API
-    apiURL = searchTerm ? `https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}` : apiURL
-    getImages(apiURL);
+  const showLightbox = (name: string, img: string) => {
+    // Showing lightbox and setting img source, name, and button attribute
+    const lightboxImg = lightbox.querySelector("img") as HTMLImageElement;
+    const lightboxName = lightbox.querySelector("span") as HTMLElement;
+    const downloadImgBtn = lightbox.querySelector(".uis-import") as HTMLElement;
+
+    lightboxImg.src = img;
+    lightboxName.innerText = name;
+    downloadImgBtn.dataset.img = img;
+    lightbox.classList.add("show");
+    document.body.style.overflow = "hidden";
+  };
+
+
+const hideLightbox = () => {
+  // Hiding lightbox on close icon click
+  lightbox.classList.remove("show");
+  document.body.style.overflow = "auto";
 };
 
-const loadSearchImages = (e: KeyboardEvent): void => {
-    // If the search input is empty, set the search term to null and return from here
-    if ((e.target as HTMLInputElement).value === "") {
-        searchTerm = null;
-        return;
-    }
-    // if pressed key is Enter, update the current page, search term & call the getImages
-     if(e.key === "Enter"){
-        currentPage = 1;
-        searchTerm = (e.target as HTMLInputElement).value;
-        imagesWrapper.innerHTML = "";
-        getImages(`https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}`);
-     }
-}
+const generateHTML = (images: { photographer: string; src: { large2x: string } }[]) => {
+  // Making li of all fetched images and adding them to the existing image wrapper
+  imageWrapper.innerHTML += images
+    .map(
+      (img) => `
+        <li class="card">
+            <img onclick="showLightbox('${img.photographer}', '${img.src.large2x}')" src="${img.src.large2x}" alt="img">
+            <div class="details">
+                <div class="photographer">
+                    <i class="uil uil-camera"></i>
+                    <span>${img.photographer}</span>
+                </div>
+                <button onclick="downloadImg('${img.src.large2x}');">
+                    <i class="uil uil-import"></i>
+                </button>
+            </div>
+        </li>
+      `
+    )
+    .join("");
+};
 
-getImages(apiURL);
+const getImages = (apiURL: string) => {
+  // Fetching images by API call with authorization header
+  searchInput.blur();
+  loadMoreBtn.innerText = "Loading...";
+  loadMoreBtn.classList.add("disabled");
+  const headers: HeadersInit | undefined = apiKey ? { Authorization: apiKey } : undefined;
+
+  fetch(apiURL, headers)
+    .then((res) => res.json())
+    .then((data) => {
+      generateHTML(data.photos);
+      loadMoreBtn.innerText = "Load More";
+      loadMoreBtn.classList.remove("disabled");
+    })
+    .catch(() => alert("Failed to load images!"));
+};
+
+const loadMoreImages = () => {
+  currentPage++; // Increment currentPage by 1
+  // If searchTerm has some value then call API with search term else call default API
+  let apiUrl = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
+  apiUrl = searchTerm ? `https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}` : apiUrl;
+  getImages(apiUrl);
+};
+
+const loadSearchImages = (e: KeyboardEvent) => {
+    // If the search input is empty, set the search term to null and return from here
+    const target = e.target as HTMLInputElement;
+    if (target.value === "") {
+      searchTerm = null;
+      return;
+    }
+
+    // If pressed key is Enter, update the current page, search term & call the getImages
+    if (e.key === "Enter") {
+      currentPage = 1;
+      searchTerm = target.value;
+      imageWrapper.innerHTML = "";
+      getImages(`https://api.pexels.com/v1/search?query=${searchTerm}&page=1&per_page=${perPage}`);
+    }
+  };
+
+getImages(`https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`);
 loadMoreBtn.addEventListener("click", loadMoreImages);
 searchInput.addEventListener("keyup", loadSearchImages);
-closeBtn.addEventListener("click", hideLightbox);
-downloadImgBtn.addEventListener("click", (e: MouseEvent) => {
-    const img = (e.target as HTMLElement).dataset.img;
-    if (img) {
-      downloadImg(img);
+closeImgBtn.addEventListener("click", hideLightbox);
+downloadImgBtn.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    const imgUrl = target.dataset.img;
+    if (imgUrl) {
+      downloadImg(imgUrl);
     }
 });
 

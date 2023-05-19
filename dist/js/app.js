@@ -1,128 +1,107 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
-var __webpack_exports__ = {};
-
-const imagesWrapper = document.querySelector(".images");
-const loadMoreBtn = document.querySelector(".load-more");
-const searchInput = document.querySelector(".search-box input");
-const lightBox = document.querySelector(".lightbox");
-const closeBtn = document.querySelector(".uis-times");
-const downloadImgBtn = document.querySelector(".uis-import");
+"use strict";
+const imageWrapper = document.querySelector(".images");
+const searchInput = document.querySelector(".search input");
+const loadMoreBtn = document.querySelector(".gallery .load-more");
+const lightbox = document.querySelector(".lightbox");
+const downloadImgBtn = lightbox.querySelector(".uis-import");
+const closeImgBtn = lightbox.querySelector(".uis-times");
 const apiKey = "AbWb1cZeTGI4crzYj59wKuNVgDoF7u7XEhkLGBCgHLFC0fkW7M1JxUjb";
 const perPage = 15;
 let currentPage = 1;
-let apiURL = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
-let searchTerm;
-const downloadImg = (imgURL) => {
+let searchTerm = null;
+const downloadImg = (imgUrl) => {
     // Converting received img to blob, creating its download link, & downloading it
-    fetch(imgURL)
+    fetch(imgUrl)
         .then((res) => res.blob())
-        .then((file) => {
+        .then((blob) => {
         const a = document.createElement("a");
-        a.href = URL.createObjectURL(file);
+        a.href = URL.createObjectURL(blob);
         a.download = new Date().getTime().toString();
         a.click();
     })
         .catch(() => alert("Failed to download image!"));
 };
 const showLightbox = (name, img) => {
-    var _a;
-    // Showing lightbox and setting img source, name and button attributes
-    (_a = lightBox.querySelector("img")) === null || _a === void 0 ? void 0 : _a.setAttribute("src", img);
-    const photographerSpan = lightBox.querySelector(".photographer span");
-    if (photographerSpan !== null) {
-        photographerSpan.innerHTML = name !== null && name !== void 0 ? name : '';
-    }
-    downloadImgBtn.setAttribute("data-img", img);
-    lightBox.classList.add("show");
+    // Showing lightbox and setting img source, name, and button attribute
+    const lightboxImg = lightbox.querySelector("img");
+    const lightboxName = lightbox.querySelector("span");
+    const downloadImgBtn = lightbox.querySelector(".uis-import");
+    lightboxImg.src = img;
+    lightboxName.innerText = name;
+    downloadImgBtn.dataset.img = img;
+    lightbox.classList.add("show");
     document.body.style.overflow = "hidden";
 };
 const hideLightbox = () => {
-    lightBox.classList.add("show");
+    // Hiding lightbox on close icon click
+    lightbox.classList.remove("show");
     document.body.style.overflow = "auto";
 };
 const generateHTML = (images) => {
     // Making li of all fetched images and adding them to the existing image wrapper
-    imagesWrapper.innerHTML += images
-        .map((img) => {
-        const li = document.createElement('li');
-        li.className = 'card';
-        const imgElement = document.createElement('img');
-        imgElement.src = img.src.large2x;
-        imgElement.alt = img.alt;
-        imgElement.addEventListener('click', () => {
-            showLightbox(img.photographer, img.src.large2x);
-        });
-        const detailsDiv = document.createElement('div');
-        detailsDiv.className = 'details';
-        const photographerDiv = document.createElement('div');
-        photographerDiv.className = 'photographer';
-        const cameraIcon = document.createElement('i');
-        cameraIcon.className = 'uis uis-camera';
-        const photographerName = document.createElement('span');
-        photographerName.textContent = img.photographer;
-        photographerDiv.appendChild(cameraIcon);
-        photographerDiv.appendChild(photographerName);
-        const downloadButton = document.createElement('button');
-        downloadButton.addEventListener('click', () => {
-            downloadImg(img.src.large2x);
-        });
-        const importIcon = document.createElement('i');
-        importIcon.className = 'uis uis-import';
-        downloadButton.appendChild(importIcon);
-        detailsDiv.appendChild(photographerDiv);
-        detailsDiv.appendChild(downloadButton);
-        li.appendChild(imgElement);
-        li.appendChild(detailsDiv);
-        return li.outerHTML;
-    })
-        .join('');
+    imageWrapper.innerHTML += images
+        .map((img) => `
+        <li class="card">
+            <img onclick="showLightbox('${img.photographer}', '${img.src.large2x}')" src="${img.src.large2x}" alt="img">
+            <div class="details">
+                <div class="photographer">
+                    <i class="uil uil-camera"></i>
+                    <span>${img.photographer}</span>
+                </div>
+                <button onclick="downloadImg('${img.src.large2x}');">
+                    <i class="uil uil-import"></i>
+                </button>
+            </div>
+        </li>
+      `)
+        .join("");
 };
 const getImages = (apiURL) => {
-    loadMoreBtn.innerHTML = "Loading...";
-    loadMoreBtn.classList.add("disabled");
     // Fetching images by API call with authorization header
-    const headers = {
-        Authorization: apiKey !== null && apiKey !== void 0 ? apiKey : "",
-    };
-    fetch(apiURL, {
-        headers
-    })
+    searchInput.blur();
+    loadMoreBtn.innerText = "Loading...";
+    loadMoreBtn.classList.add("disabled");
+    const headers = apiKey ? { Authorization: apiKey } : undefined;
+    fetch(apiURL, headers)
         .then((res) => res.json())
         .then((data) => {
         generateHTML(data.photos);
-        loadMoreBtn.innerHTML = "Load More";
+        loadMoreBtn.innerText = "Load More";
         loadMoreBtn.classList.remove("disabled");
-    }).catch(() => alert("Failed to load images"));
+    })
+        .catch(() => alert("Failed to load images!"));
 };
 const loadMoreImages = () => {
     currentPage++; // Increment currentPage by 1
-    // if searchTerm has some value then call API with search term else call default API
-    apiURL = searchTerm ? `https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}` : apiURL;
-    getImages(apiURL);
+    // If searchTerm has some value then call API with search term else call default API
+    let apiUrl = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
+    apiUrl = searchTerm ? `https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}` : apiUrl;
+    getImages(apiUrl);
 };
 const loadSearchImages = (e) => {
     // If the search input is empty, set the search term to null and return from here
-    if (e.target.value === "") {
+    const target = e.target;
+    if (target.value === "") {
         searchTerm = null;
         return;
     }
-    // if pressed key is Enter, update the current page, search term & call the getImages
+    // If pressed key is Enter, update the current page, search term & call the getImages
     if (e.key === "Enter") {
         currentPage = 1;
-        searchTerm = e.target.value;
-        imagesWrapper.innerHTML = "";
-        getImages(`https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}`);
+        searchTerm = target.value;
+        imageWrapper.innerHTML = "";
+        getImages(`https://api.pexels.com/v1/search?query=${searchTerm}&page=1&per_page=${perPage}`);
     }
 };
-getImages(apiURL);
+getImages(`https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`);
 loadMoreBtn.addEventListener("click", loadMoreImages);
 searchInput.addEventListener("keyup", loadSearchImages);
-closeBtn.addEventListener("click", hideLightbox);
+closeImgBtn.addEventListener("click", hideLightbox);
 downloadImgBtn.addEventListener("click", (e) => {
-    const img = e.target.dataset.img;
-    if (img) {
-        downloadImg(img);
+    const target = e.target;
+    const imgUrl = target.dataset.img;
+    if (imgUrl) {
+        downloadImg(imgUrl);
     }
 });
 const colors = [
@@ -141,6 +120,3 @@ function changeColor() {
     currentIndex = (currentIndex + 1) % colors.length;
 }
 setInterval(changeColor, 5000);
-
-/******/ })()
-;
