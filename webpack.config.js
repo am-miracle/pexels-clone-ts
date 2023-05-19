@@ -29,6 +29,9 @@ module.exports = {
     path: path.resolve(__dirname, 'dist/js'),
   },
   plugins: [
-    new Dotenv()
+    new Dotenv(),
+    // new webpack.DefinePlugin({
+    //   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    // })
   ]
 };
