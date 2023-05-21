@@ -14,7 +14,7 @@ const downloadImg = (imgUrl: string) => {
     // Converting received img to blob, creating its download link, & downloading it
     fetch(imgUrl)
       .then((res) => res.blob())
-      .then((blob) => {
+      .then((blob: Blob) => {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = new Date().getTime().toString();
