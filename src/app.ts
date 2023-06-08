@@ -70,17 +70,14 @@ const getImages = (apiURL: string) => {
   searchInput.blur();
   loadMoreBtn.innerText = "Loading...";
   loadMoreBtn.classList.add("disabled");
-  const headers: HeadersInit | undefined = apiKey ? { Authorization: apiKey } : undefined;
-
-  fetch(apiURL, headers)
-    .then((res) => res.json())
-    .then((data) => {
+  fetch(apiURL, {
+      headers: { Authorization: apiKey }
+  }).then(res => res.json()).then(data => {
       generateHTML(data.photos);
       loadMoreBtn.innerText = "Load More";
       loadMoreBtn.classList.remove("disabled");
-    })
-    .catch(() => alert("Failed to load images!"));
-};
+  }).catch(() => alert("Failed to load images!"));
+}
 
 const loadMoreImages = () => {
   currentPage++; // Increment currentPage by 1
