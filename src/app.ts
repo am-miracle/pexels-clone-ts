@@ -49,14 +49,14 @@ const generateHTML = (images: { photographer: string; src: { large2x: string } }
     .map(
       (img) => `
         <li class="card">
-            <img onclick="showLightbox('${img.photographer}', '${img.src.large2x}')" src="${img.src.large2x}" alt="img">
+            <img onclick="showLightbox('${img.photographer}', '${img.src.large2x}')" src="${img.src.large2x}" alt="preview box">
             <div class="details">
                 <div class="photographer">
-                    <i class="uil uil-camera"></i>
+                    <i class="uis uis-camera"></i>
                     <span>${img.photographer}</span>
                 </div>
                 <button onclick="downloadImg('${img.src.large2x}');">
-                    <i class="uil uil-import"></i>
+                    <i class="uis uis-import"></i>
                 </button>
             </div>
         </li>
@@ -82,7 +82,7 @@ const getImages = (apiURL: string) => {
 const loadMoreImages = () => {
   currentPage++; // Increment currentPage by 1
   // If searchTerm has some value then call API with search term else call default API
-  let apiUrl = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
+  let apiUrl: string | null = `https://api.pexels.com/v1/curated?page=${currentPage}&per_page=${perPage}`;
   apiUrl = searchTerm ? `https://api.pexels.com/v1/search?query=${searchTerm}&page=${currentPage}&per_page=${perPage}` : apiUrl;
   getImages(apiUrl);
 };

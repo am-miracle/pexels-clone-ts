@@ -42,14 +42,14 @@ const generateHTML = (images) => {
     imageWrapper.innerHTML += images
         .map((img) => `
         <li class="card">
-            <img onclick="showLightbox('${img.photographer}', '${img.src.large2x}')" src="${img.src.large2x}" alt="img">
+            <img onclick="showLightbox('${img.photographer}', '${img.src.large2x}')" src="${img.src.large2x}" alt="preview box">
             <div class="details">
                 <div class="photographer">
-                    <i class="uil uil-camera"></i>
+                    <i class="uis uis-camera"></i>
                     <span>${img.photographer}</span>
                 </div>
                 <button onclick="downloadImg('${img.src.large2x}');">
-                    <i class="uil uil-import"></i>
+                    <i class="uis uis-import"></i>
                 </button>
             </div>
         </li>
